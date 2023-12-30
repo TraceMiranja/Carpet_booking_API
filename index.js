@@ -13,7 +13,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+
+// Configure CORS to allow specific origins
+app.use(cors({
+  origin: 'http://localhost:5173' // Add your frontend URL here
+}));
 
 // Connect to MongoDB
 mongoose.set('strictQuery', false);
