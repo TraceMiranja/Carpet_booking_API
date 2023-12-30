@@ -142,6 +142,6 @@ I would like to thank all contributors to this project and the open-source commu
 
 ## 📝 License <a name="license"></a>
 
-This project is licensed under the [MIT License](https://github.com/TraceMiranja/Carpet_booking_API/blob/main/LICENSE).
+This project is [MIT](./LICENSE) licensed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
