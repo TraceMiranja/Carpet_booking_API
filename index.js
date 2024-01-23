@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Configure CORS to allow specific origins
 app.use(cors({
-  origin: 'https://65a5595df8ae3103ee70c96d--reliable-fudge-76ec88.netlify.app/' // Add your frontend URL here
+  origin: 'https://65a5595df8ae3103ee70c96d--reliable-fudge-76ec88.netlify.app' // Add your frontend URL here
 }));
 
 // Connect to MongoDB
