@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Configure CORS to allow specific origins
 app.use(
   cors({
-    origin: "https://reliable-fudge-76ec88.netlify.app/", // Add your frontend URL here
+    origin: "https://reliable-fudge-76ec88.netlify.app", // Add your frontend URL here
   })
 );
 
