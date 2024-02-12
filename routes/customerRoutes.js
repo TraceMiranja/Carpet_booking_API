@@ -1,7 +1,7 @@
 // Import required modules
 const express = require("express");
-const router = express.Router();
-const Customer = require("../models/customers");
+const router = express.Router(); // Create a router object
+const Customer = require("../models/customers"); // Import the Customer model
 
 // Middleware to parse JSON data
 router.use(express.json());
@@ -11,29 +11,11 @@ router.get("/", (req, res) => {
   res.send("Welcome to the Carpet Booking Management API by Tracy Miranja");
 });
 
-// Route to add a new customer (and wpAdmin user if it doesn't exist)
+// Route to add a new customer
 router.post("/customers", async (req, res) => {
   try {
-    const existingAdminUser = await Customer.findOne({ role: "wpAdmin" });
-    if (!existingAdminUser) {
-      // Create a new wpAdmin user if it doesn't exist
-      const wpAdminUser = new Customer({
-        name: "WP Admin",
-        username: "wpadmin",
-        email: "wpadmin@example.com",
-        password: "wpAdmin*23#&",
-        role: "wpAdmin",
-        dateOfBirth: new Date(),
-        phoneNumber: "1234567890",
-        location: "Some Location",
-      });
-      await wpAdminUser.save();
-    }
-
-    // Create a new customer with the request body data
-    const newCustomer = new Customer(req.body);
-    await newCustomer.save();
-
+    const newCustomer = new Customer(req.body); // Create a new customer with the request body data
+    await newCustomer.save(); // Save the new customer
     res.status(201).send("Customer added successfully");
   } catch (error) {
     console.error("Error:", error);
@@ -56,9 +38,9 @@ router.get("/customers", async (req, res) => {
 router.put("/customers/:id", async (req, res) => {
   try {
     const updatedCustomer = await Customer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
+      req.params.id, // Get the _id from URL parameter
+      req.body, // Update customer with data from request body
+      { new: true } // Return the updated object
     );
     if (updatedCustomer) {
       res.json(updatedCustomer);
