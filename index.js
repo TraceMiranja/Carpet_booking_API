@@ -39,26 +39,14 @@ const connectDB = async () => {
 app.use("/", customerRoutes);
 app.use("/", bookingRoutes);
 
-// General error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
-
-// Connect to the database and start the server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
-  });
-});
-
 app.post("/forgotpassword", (req, res) => {
   const { email } = req.body;
-  customersModel.findOne({ email: email }).then((customers) => {
-    if (!customers) {
+  // Use "customers" instead of "customersModel"
+  customers.findOne({ email: email }).then((customer) => {
+    if (!customer) {
       return res.send({ status: "user not exist" });
     }
-    const token = jwt.sign({ id: customers._id }, "jwt_secret_key", {
+    const token = jwt.sign({ id: customer._id }, "jwt_secret_key", {
       expiresIn: "300sec",
     });
     var transporter = nodemailer.createTransport({
@@ -73,7 +61,7 @@ app.post("/forgotpassword", (req, res) => {
       from: "youremail@gmail.com",
       to: "myfriend@yahoo.com",
       subject: "Reset your password",
-      text: `http://localhost:5173/forgotpassword/${customers._id}/${token}`,
+      text: `http://localhost:5173/forgotpassword/${customer._id}/${token}`,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -83,5 +71,17 @@ app.post("/forgotpassword", (req, res) => {
         return res.send({ status: "success" });
       }
     });
+  });
+});
+// General error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
+// Connect to the database and start the server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
   });
 });
