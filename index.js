@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const customerRoutes = require("./routes/customerRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const cors = require("cors");
+const customers = require("./models/customers");
+var nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,5 +49,39 @@ app.use((err, req, res, next) => {
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
+  });
+});
+
+app.post("/forgotpassword", (req, res) => {
+  const { email } = req.body;
+  customersModel.findOne({ email: email }).then((customers) => {
+    if (!customers) {
+      return res.send({ status: "user not exist" });
+    }
+    const token = jwt.sign({ id: customers._id }, "jwt_secret_key", {
+      expiresIn: "300sec",
+    });
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "youremail@gmail.com",
+        pass: "yourpassword",
+      },
+    });
+
+    var mailOptions = {
+      from: "youremail@gmail.com",
+      to: "myfriend@yahoo.com",
+      subject: "Reset your password",
+      text: `http://localhost:5173/forgotpassword/${customers._id}/${token}`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        return res.send({ status: "success" });
+      }
+    });
   });
 });
