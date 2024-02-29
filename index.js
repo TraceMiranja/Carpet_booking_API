@@ -42,15 +42,15 @@ app.use("/", customerRoutes);
 app.use("/", bookingRoutes);
 app.use("/", forgetPasswordRoutes);
 
+// General error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
 // Connect to the database and start the server
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
   });
-});
-
-// General error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
 });
