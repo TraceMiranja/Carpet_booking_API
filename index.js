@@ -9,6 +9,7 @@ const cors = require("cors");
 const customers = require("./models/customers");
 var nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const forgetPasswordRoutes = require("./routes/forgetPasswordRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,49 +40,17 @@ const connectDB = async () => {
 // Use routes for handling paths
 app.use("/", customerRoutes);
 app.use("/", bookingRoutes);
-
-app.post("/forgotpassword", (req, res, next) => {
-  const { email } = req.body;
-  customers.findOne({ email: email }).then((customer) => {
-    if (!customer) {
-      return res.send({ status: "user not exist" });
-    }
-    const token = jwt.sign({ id: customer._id }, process.env.JWT_SECRET, {
-      expiresIn: "300sec",
-    });
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-    var mailOptions = {
-      from: process.env.EMAIL_USERNAME,
-      to: email,
-      subject: "Reset your password",
-      text: `http://localhost:5173/resetpassword/${customer._id}/${token}`,
-    };
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        return res.send({ status: "success" });
-      }
-    });
-  });
-  next();
-});
-
-// General error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
+app.use("/", forgetPasswordRoutes);
 
 // Connect to the database and start the server
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
   });
+});
+
+// General error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
