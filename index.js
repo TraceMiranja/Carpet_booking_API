@@ -8,6 +8,7 @@ const bookingRoutes = require("./routes/bookingRoutes");
 const cors = require("cors");
 const customers = require("./models/customers");
 var nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Configure CORS to allow specific origins
 app.use(
   cors({
-    origin: "http://localhost:5173", // Add your frontend URL here
+    origin: "http://localhost:5173", // Added my frontend URL here
   })
 );
 
@@ -39,31 +40,28 @@ const connectDB = async () => {
 app.use("/", customerRoutes);
 app.use("/", bookingRoutes);
 
-app.post("/forgotpassword", (req, res) => {
+app.post("/forgotpassword", (req, res, next) => {
   const { email } = req.body;
-  // Use "customers" instead of "customersModel"
   customers.findOne({ email: email }).then((customer) => {
     if (!customer) {
       return res.send({ status: "user not exist" });
     }
-    const token = jwt.sign({ id: customer._id }, "jwt_secret_key", {
+    const token = jwt.sign({ id: customer._id }, process.env.JWT_SECRET, {
       expiresIn: "300sec",
     });
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "youremail@gmail.com",
-        pass: "yourpassword",
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
-
     var mailOptions = {
-      from: "youremail@gmail.com",
-      to: "myfriend@yahoo.com",
+      from: process.env.EMAIL_USERNAME,
+      to: email,
       subject: "Reset your password",
-      text: `http://localhost:5173/forgotpassword/${customer._id}/${token}`,
+      text: `http://localhost:5173/resetpassword/${customer._id}/${token}`,
     };
-
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
@@ -72,7 +70,9 @@ app.post("/forgotpassword", (req, res) => {
       }
     });
   });
+  next();
 });
+
 // General error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

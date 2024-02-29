@@ -32,16 +32,21 @@ const bookingSchema = new mongoose.Schema({
   },
   booking_date: {
     type: Date,
-    default: Date.now, // Automatically sets to current date
+    default: Date.now,
   },
   booking_time: {
-    type: String, // Assuming time is stored in HH:MM format
-    default: () => new Date().toLocaleTimeString(), // Automatically sets to current time
+    type: String,
+    default: () => new Date().toLocaleTimeString(),
   },
   status: {
     type: String,
     enum: ["incomplete", "complete", "pending"],
     default: "pending",
+  },
+  //added this for reset
+  resetLink: {
+    data: String,
+    default: "",
   },
 });
 
