@@ -40,39 +40,6 @@ const connectDB = async () => {
 app.use("/", customerRoutes);
 app.use("/", bookingRoutes);
 
-app.post("/forgotpassword", (req, res, next) => {
-  const { email } = req.body;
-  customers.findOne({ email: email }).then((customer) => {
-    if (!customer) {
-      return res.send({ status: "user not exist" });
-    }
-    const token = jwt.sign({ id: customer._id }, process.env.JWT_SECRET, {
-      expiresIn: "300sec",
-    });
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-    var mailOptions = {
-      from: process.env.EMAIL_USERNAME,
-      to: email,
-      subject: "Reset your password",
-      text: `http://localhost:5173/resetpassword/${customer._id}/${token}`,
-    };
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        return res.send({ status: "success" });
-      }
-    });
-  });
-  next();
-});
-
 // General error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

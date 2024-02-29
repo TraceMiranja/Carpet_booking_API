@@ -43,11 +43,6 @@ const bookingSchema = new mongoose.Schema({
     enum: ["incomplete", "complete", "pending"],
     default: "pending",
   },
-  //added this for reset
-  resetLink: {
-    data: String,
-    default: "",
-  },
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);
