@@ -30,7 +30,7 @@ router.post("/forgotpassword", (req, res) => {
         from: process.env.EMAIL_USERNAME,
         to: email,
         subject: "Reset your password",
-        text: `http://localhost:5173/resetpassword/${customer._id}/${token}`,
+        text: `http://localhost:5173/ResetPassword/${customer._id}/${token}`,
       };
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
