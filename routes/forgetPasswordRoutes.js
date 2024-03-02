@@ -16,7 +16,7 @@ router.post("/forgotpassword", (req, res) => {
         return res.send({ status: "user not exist" });
       }
       const token = jwt.sign({ id: customer._id }, process.env.JWT_SECRET, {
-        expiresIn: "300sec",
+        expiresIn: "10min",
       });
       var transporter = nodemailer.createTransport({
         service: "gmail",
@@ -30,7 +30,7 @@ router.post("/forgotpassword", (req, res) => {
         from: process.env.EMAIL_USERNAME,
         to: email,
         subject: "Reset your password",
-        text: `http://localhost:5173/ResetPassword/${customer._id}/${token}`,
+        text: `http://localhost:5173/resetpassword/${customer._id}/${token}`,
       };
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -45,6 +45,25 @@ router.post("/forgotpassword", (req, res) => {
       console.log(err);
       return res.status(500).send({ status: "internal server error" });
     });
+});
+router.post("/resetpassword/:id/:token", (req, res) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.send({ status: "Error with token" });
+    } else {
+      bcrypt.hash(password, 10).then((hash) => {
+        customers
+          .findByIdAndUpdate({ _id: id }, { password: hash })
+          .then((u) => res.send({ status: "success" }))
+          .catch((error) => {
+            res.send({ status: error });
+          });
+      });
+    }
+  });
 });
 
 module.exports = router;
