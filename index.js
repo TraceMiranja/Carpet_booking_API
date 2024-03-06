@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Configure CORS to allow specific origins
 app.use(
   cors({
-    origin: "http://localhost:5173", // Added my frontend URL here
+    origin: "https://essicacarpetcleaning.com", // Added my frontend URL here
   })
 );
 
